@@ -1,3 +1,4 @@
+#A1
 import re
 
 TIPAR = re.compile(r"Failed password for (?:invalid user )?(\S+) from (\S+) port")
@@ -10,3 +11,47 @@ def esec(linie):
 
 print(esec("... Failed password for root from 203.0.113.9 port 51230 ssh2"))
 print(esec("<linie stricata fara structura>"))
+
+#A2
+def citeste_esecuri(cale):
+    esecuri = [] 
+
+    try: 
+        f = open(cale, encoding="utf-8")
+    except FileNotFoundError:
+        print("nu gasesc", cale)
+        return esecuri
+
+    with f:
+        for linie in f:
+            r = esec(linie)
+
+            if r is not None: #
+                esecuri.append({
+                    "user": r[0],
+                    "ip": r[1]
+                })
+
+    return esecuri
+#A3
+from collections import Counter
+
+def pe_ip(esecuri):
+    return Counter(e["ip"] for e in esecuri)
+#A4
+import sys
+
+def main():
+    cale = sys.argv[1] if len(sys.argv) > 1 else "arsenal\aparare\start\auth.log"
+
+    esecuri = citeste_esecuri(cale)
+    counts = pe_ip(esecuri)
+
+    print("Esecuri de autentificare:", len(esecuri))
+
+    for ip, n in counts.most_common():
+        print(f"  {ip}: {n}")
+
+
+if __name__ == "__main__":
+    main()
